@@ -1,31 +1,83 @@
 import "../styles/ExpenseForm.css";
+import{useState} from "react";
 
 export default function ExpenseForm(){
+    const [formdata, setFormData] = useState({
+        amount: "",
+        description:'',
+        date: new Date().toISOString().split('T')[0],
+        category:'',
+    });
+    const[errors, setErrors] = useState({});
+
+    const handleChange = (e) => {
+        const {name, value} = e.target;
+
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === "amount" && value!=="" ? Number(value) : value,
+        }));
+    };
+    const validate=()=>{
+        const newErrors={};
+
+        if(!formdata.amount|| formdata.amount<=0){
+            newErrors.amount='Enter an amount greater than 0';
+        }
+        if(!formdata.description.trim()){
+            newErrors.description='Description is required';
+        }
+        if(!formdata.date){
+            newErrors.date='Data is required';
+        }
+        if(!formdata.category){
+            newErrors.category='select a category';
+        }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+}
+
+    const handleSubmit=(e)=>{
+        e.preventDefault();
+        if(!validate()) return;
+
+        console.log("Expense Added Successfully",
+            formdata.amount,formdata.description,formdata.date,formdata.category);
+    }
     return(
          <div className="expenseform">
-                <form>
+                < form onSubmit={handleSubmit}>
                     <h1>Expense Form</h1>
 
                     <input 
                           type="number"
                           name="amount"
                           placeholder="Enter amount.."
+                          value={formdata.amount}
+                          onChange={handleChange}
                     />
+                    {errors.amount && <p className="validation">{errors.description}</p>}
 
                     <input 
                           type="text"
                           name="description"
                           placeholder="Enter Description.."
+                          value={formdata.description}
+                          onChange={handleChange}
                     />
+                    {errors.description && <p className="validation">{errors.description}</p>}
 
                     <input 
                           type="date"
                           name="date"
                           placeholder="Enter Date.."
+                          value={formdata.date}
+                          onChange={handleChange}
                     />
-
-                    <lable htnlFor="category">Category:</lable>
-                    <select id="category" name="category" defaultValue="">
+                    {errors.date && <p className="validation">{errors.date}</p>}
+                    <label htmlFor="category">Category:</label>
+                    <select id="category" name="category" value={formdata.category} onChange={handleChange}>
                         <option value="">Select Category</option>
                         <option value="food">Food</option>
                         <option value="shopping">Shopping</option>
@@ -34,9 +86,9 @@ export default function ExpenseForm(){
                         <option value="phoneBill">Phone Bill</option>
                         <option value="entertainment">Entertainment</option>
                     </select>
-
+                        {errors.category && <p className="validation">{errors.category}</p>}
                     <div className="btn">
-                        <button type="button">Add Expense</button>
+                        <button>Add Expense</button>
                     </div>
                 </form>
          </div>
