@@ -1,7 +1,26 @@
+import { useEffect, useState } from 'react';
 import '../styles/ExpenseList.css';
-function ExpenseList({expenses}){
+import ConfirmationModal from './ConfirmationModal';
+function ExpenseList(){
+    const[expenses, setExpenses] = useState([]);
+    const loadExpenses = () => {
+    const savedExpense = JSON.parse(localStorage.getItem("expense") || "[]");
+        setExpenses(savedExpense);
+    };
+
+    useEffect(() =>{
+        //safe: we only read lovcalstorage on mount
+        //eslint-disable-next-line react-hooks/set-state-in-effect
+        loadExpenses();
+    },[])
+
+        const totalAmount = expenses.reduce(
+            (sum,item) => sum + Number(item.amount),
+            0
+        );
     return(
-        <div className='ExpenseList'>
+        <>
+          <div className='ExpenseList'>
               <div className='list-search'>
            <div>
                <h1>your expense</h1>
@@ -36,11 +55,10 @@ function ExpenseList({expenses}){
             </thead>
 
             <tbody>
-
-               {expenses.map((expense)=>(
-                 <tr>
+ {expenses.length>0 ?(expenses.map((expense)=>(
+                 <tr key={expense.id}>
                     <td>{expense.amount}</td>
-                    <td>{expense.shopping}</td>
+                    <td>{expense.description}</td>
                     <td>{expense.date}</td>
                     <td>{expense.category}</td>
                     <td className="table-action">
@@ -49,15 +67,30 @@ function ExpenseList({expenses}){
                         <butoon className="btn-readmore">View</butoon>
                     </td>
                 </tr>
-            ))}
+            ))):(
+                <tr>
+                    <td colSpan={7} className='no-data'>
+                        No result Found
+                    </td>
+                </tr>
+            )}
 
                 <tr className="expense-total">
-                    <td colSpan={5}>Total:₹2,000</td>
+                    <td colSpan={5}>Total:{totalAmount}                 </td>
                 </tr>
             </tbody>
         </table>
         </div>
-
+        <ConfirmationModal
+            title="delete Expense"
+            message={"Are you sure want to delete this expense"}
+            confirmText="Delete"
+            cancelText="Cancel"
+            onCancel={() => {}}
+            onConfirm={() => {}}
+        />
+      
+</>
     );
 }
 
