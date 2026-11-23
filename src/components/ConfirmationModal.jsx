@@ -23,7 +23,7 @@ function ConfirmationModal({
           <button
             type="button"
             className="confirmation-cancel"
-            pnClick={onCancel}
+            onClick={onCancel}
           >
             {cancelText}
           </button>
