@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import "../styles/ExpenseList.css";
 import ConfirmationModal from "./ConfirmationModal";
 import EditModel from "./EditModel";
+import { useNavigate } from "react-router-dom";
 function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
   const [deleteExpense, setDeleteExpense] = useState(null);
-  const [openModel,setOpenModel]=useState(null);
-  const [editId,setEditId]=useState(null);
+  const [openModel, setOpenModel] = useState(null);
+  const [editId, setEditId] = useState(null);
+  const navigate = useNavigate();
 
   const loadExpenses = () => {
     const savedExpense = JSON.parse(localStorage.getItem("expense") || "[]");
@@ -33,9 +35,14 @@ function ExpenseList() {
     setDeleteExpense(null);
   };
 
-  const editHandler=(id) => {
+  const editHandler = (id) => {
     setEditId(id);
     setOpenModel(true);
+  };
+
+  //Read More handler
+  const handleReadMore = (id) => {
+    navigate(`/expenseDetails/${id}`);
   };
 
   return (
@@ -81,7 +88,6 @@ function ExpenseList() {
                   <td>{expense.date}</td>
                   <td>{expense.category}</td>
                   <td className="table-action">
-
                     <button
                       type="button"
                       className="btn-delete"
@@ -90,13 +96,19 @@ function ExpenseList() {
                       Delete
                     </button>
 
-                    <butoon
-                    onClick={() => editHandler(expense.id)}
-                    className="btn-edit">
-                        Edit
-                        </butoon>
+                    <button
+                      onClick={() => editHandler(expense.id)}
+                      className="btn-edit"
+                    >
+                      Edit
+                    </button>
 
-                    <butoon className="btn-readmore">View</butoon>
+                    <button
+                      className="btn-readmore"
+                      onClick={() => handleReadMore(expense.id)}
+                    >
+                      View
+                    </button>
                   </td>
                 </tr>
               ))
@@ -115,18 +127,22 @@ function ExpenseList() {
         </table>
       </div>
       {deleteExpense !== null && (
-      <ConfirmationModal
-        title="delete Expense"
-        message={"Are you sure want to delete this expense"}
-        confirmText="Delete"
-        cancelText="Cancel"
-        onCancel={() => setDeleteExpense(null)}
-        onConfirm={() => handleDelete(deleteExpense.id)}
-      />
+        <ConfirmationModal
+          title="delete Expense"
+          message={"Are you sure want to delete this expense"}
+          confirmText="Delete"
+          cancelText="Cancel"
+          onCancel={() => setDeleteExpense(null)}
+          onConfirm={() => handleDelete(deleteExpense.id)}
+        />
       )}
-      {openModel && editId !==null &&(
-        <EditModel/>      
-        )}
+      {openModel && editId !== null && (
+        <EditModel
+          editId={editId}
+          onClose={() => setOpenModel(false)}
+          onUpdate={loadExpenses}
+        />
+      )}
     </>
   );
 }
