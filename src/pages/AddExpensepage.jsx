@@ -1,10 +1,8 @@
-import Navbar from "./Navbar";
-import ExpenseForm from "./ExpenseForm";
+import ExpenseForm from "../components/ExpenseForm";
 
 function AddExpensepage(){
     return(
         <>
-            <Navbar/>
             <ExpenseForm/>
         </>
     )
