@@ -5,22 +5,33 @@ import AddExpensepage from "./pages/AddExpensepage";
 import ExpenseDetails from "./components/ExpenseDetails";
 import Layout from "./Layout/Layout";
 import LoginPage from "./pages/LoginPage";
+import PrivateRoutes from "./auth/PrivateRoutes";
+import ExpenseItemPage from "./pages/ExpenseItemPage";
 
-function App(){
-  const route=createBrowserRouter([
-    {path:"/",element:<Layout/>,children:[{path:'/',element:<Homepage/>},
-    {path:'/add-expense',element:<AddExpensepage/>},
-    {path: '/expenseDetails/:id',element:<ExpenseDetails/>},
-  ],
-},
-  {path:"/login", element:<LoginPage/> },
-  ])
-  
-  return(
+function App() {
+  const route = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <PrivateRoutes>
+          <Layout />
+        </PrivateRoutes>
+      ),
+      children: [
+        { path: "/", element: <Homepage /> },
+        { path: "/add-expense", element: <AddExpensepage /> },
+        { path: "/expense-items",element:<ExpenseItemPage/>},
+        { path: "/expenseDetails/:id", element: <ExpenseDetails /> },
+      ],
+    },
+    { path: "/login", element: <LoginPage /> },
+  ]);
+
+  return (
     <>
-    <RouterProvider router={route}/>
+      <RouterProvider router={route} />
     </>
-  )
+  );
 }
 
 export default App;

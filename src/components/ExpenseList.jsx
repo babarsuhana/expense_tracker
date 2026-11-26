@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
   const [deleteExpense, setDeleteExpense] = useState(null);
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [openModel, setOpenModel] = useState(null);
   const [editId, setEditId] = useState(null);
   const navigate = useNavigate();
@@ -25,6 +27,23 @@ function ExpenseList() {
     (sum, item) => sum + Number(item.amount),
     0,
   );
+
+  //Filterd expenses
+  const filteredExpenses = expenses.filter((item) => {
+    const matchesCategory = filter === "all" || item.category === filter;
+    const matchesSearch = item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  //Handlers
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   //Delete expense
   const handleDelete = (id) => {
     const updateExpenses = expenses.filter((item) => item.id !== id);
@@ -56,15 +75,20 @@ function ExpenseList() {
             </p>
           </div>
           <div>
-            <select>
-              <option>All categories</option>
-              <option>Food</option>
-              <option>Travel</option>
-              <option>Shopping</option>
-              <option>Entertainment</option>
+            <select value={filter} onChange={handleFilterChange}>
+              <option value="all">All categories</option>
+              <option value="food">Food</option>
+              <option value="travl">Travel</option>
+              <option value="shopping">Shopping</option>
+              <option value="entertainment">Entertainment</option>
             </select>
 
-            <input type="search" placeholder="Search expense..." />
+            <input
+              type="search"
+              placeholder="Search expense..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
           </div>
         </div>
 
@@ -80,8 +104,8 @@ function ExpenseList() {
           </thead>
 
           <tbody>
-            {expenses.length > 0 ? (
-              expenses.map((expense) => (
+            {filteredExpenses.length > 0 ? (
+              filteredExpenses.map((expense) => (
                 <tr key={expense.id}>
                   <td>{expense.amount}</td>
                   <td>{expense.description}</td>
